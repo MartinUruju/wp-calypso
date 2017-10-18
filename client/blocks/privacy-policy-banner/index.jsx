@@ -43,6 +43,16 @@ class PrivacyPolicyBanner extends Component {
 		this.props.acceptPrivacyPolicy( privacyPolicyId, privacyPolicyState );
 	};
 
+	getDescription( date ) {
+		const { moment, translate } = this.props;
+
+		return translate( "We're updating our privacy policy on %(date)s.", {
+			args: {
+				date: moment( date ).format( 'LL' ),
+			},
+		} );
+	}
+
 	render() {
 		const { fetchingPreferences, isPolicyAlreadyAccepted, translate } = this.props;
 
@@ -54,18 +64,12 @@ class PrivacyPolicyBanner extends Component {
 			return <QueryPrivacyPolicy />;
 		}
 
-		const description = translate( "We're updating our privacy policy on %(date)s.", {
-			args: {
-				date: this.props.moment( this.props.privacyPolicy.modified ).format( 'LL' ),
-			},
-		} );
-
 		return (
 			<div>
 				<QueryPrivacyPolicy />
 				<Banner
 					callToAction={ translate( 'Learn More' ) }
-					description={ description }
+					description={ this.getDescription( this.props.privacyPolicy.modified ) }
 					disableHref={ true }
 					icon="pages"
 					href="https://automattic.com/privacy/"
