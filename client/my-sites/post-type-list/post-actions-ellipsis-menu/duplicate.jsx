@@ -20,7 +20,7 @@ import { getPostType } from 'state/post-types/selectors';
 import { getCurrentUserId, isValidCapability } from 'state/current-user/selectors';
 import { getEditorDuplicatePostPath } from 'state/ui/editor/selectors';
 import { isEnabled } from 'config';
-import { bumpStat as bumpAnalyticsStat } from 'state/analytics/actions';
+import { bumpStat, recordTracksEvent } from 'state/analytics/actions';
 import { bumpStatGenerator } from './utils';
 
 function PostActionsEllipsisMenuDuplicate( {
@@ -28,7 +28,7 @@ function PostActionsEllipsisMenuDuplicate( {
 	canEdit,
 	status,
 	duplicateUrl,
-	bumpStat,
+	onDuplicateClick,
 } ) {
 	const validStatus = includes( [ 'draft', 'future', 'pending', 'private', 'publish' ], status );
 
@@ -37,7 +37,7 @@ function PostActionsEllipsisMenuDuplicate( {
 	}
 
 	return (
-		<PopoverMenuItem href={ duplicateUrl } onClick={ bumpStat } icon="pages">
+		<PopoverMenuItem href={ duplicateUrl } onClick={ onDuplicateClick } icon="pages">
 			{ translate( 'Duplicate', { context: 'verb' } ) }
 		</PopoverMenuItem>
 	);
@@ -49,7 +49,7 @@ PostActionsEllipsisMenuDuplicate.propTypes = {
 	canEdit: PropTypes.bool,
 	status: PropTypes.string,
 	duplicateUrl: PropTypes.string,
-	bumpStat: PropTypes.func,
+	onDuplicateClick: PropTypes.func,
 };
 
 const mapStateToProps = ( state, { globalId } ) => {
@@ -75,15 +75,16 @@ const mapStateToProps = ( state, { globalId } ) => {
 	};
 };
 
-const mapDispatchToProps = { bumpAnalyticsStat };
+const mapDispatchToProps = { bumpStat, recordTracksEvent };
 
 const mergeProps = ( stateProps, dispatchProps, ownProps ) => {
-	const bumpStat = bumpStatGenerator(
-		get( stateProps, 'type.name' ),
-		'duplicate',
-		dispatchProps.bumpAnalyticsStat
+	const onDuplicateClick = () => (
+		bumpStatGenerator( 'post', 'duplicate', dispatchProps.bumpStat ),
+		dispatchProps.recordTracksEvent( 'calypso_post_type_list_duplicate', {
+			post_type: 'post',
+		} )
 	);
-	return Object.assign( {}, ownProps, stateProps, dispatchProps, { bumpStat } );
+	return Object.assign( {}, ownProps, stateProps, dispatchProps, { onDuplicateClick } );
 };
 
 export default connect( mapStateToProps, mapDispatchToProps, mergeProps )(
