@@ -18,7 +18,9 @@ import Banner from 'components/banner';
 import config from 'config';
 import PrivacyPolicyDialog from './privacy-policy-dialog';
 import QueryPrivacyPolicy from 'components/data/query-privacy-policy';
-import { getPrivacyPolicyByEntity } from 'state/selectors';
+
+import { getPrivacyPolicyByEntity, getCurrentUserRegisterDate } from 'state/selectors';
+
 import { AUTOMATTIC_ENTITY, PRIVACY_POLICY_PREFERENCE } from './constants';
 
 class PrivacyPolicyBanner extends Component {
@@ -95,6 +97,13 @@ class PrivacyPolicyBanner extends Component {
 			showPrivacyPolicyBanner = false;
 		}
 
+		// check if the register date of the user is after the notification period
+		const userRegisterDate = moment( this.props.userRegisterDate );
+
+		if ( userRegisterDate.isAfter( notifyFrom ) ) {
+			return null;
+		}
+
 		return (
 			<div className="privacy-policy-banner">
 				<QueryPrivacyPolicy />
@@ -136,6 +145,7 @@ const mapStateToProps = state => {
 		privacyPolicyUserStatus,
 		privacyPolicy,
 		privacyPolicyId,
+		userRegisterDate: getCurrentUserRegisterDate( state ),
 	};
 };
 
