@@ -100,7 +100,7 @@ class PrivacyPolicyBanner extends Component {
 		}
 
 		return (
-			<div>
+			<div className="privacy-policy-banner">
 				<QueryPrivacyPolicy />
 
 				<Banner
