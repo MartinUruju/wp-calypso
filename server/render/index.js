@@ -89,10 +89,12 @@ export function serverRender( req, res ) {
 		context.i18nLocaleScript = '//widgets.wp.com/languages/calypso/' + context.lang + '.js';
 	}
 
+	// only serve ssr content to logged out folks
 	if (
 		config.isEnabled( 'server-side-rendering' ) &&
 		context.layout &&
 		! context.user &&
+		! req.cookies.wordpress_logged_in &&
 		cacheKey &&
 		isDefaultLocale( context.lang )
 	) {

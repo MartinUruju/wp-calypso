@@ -508,8 +508,7 @@ module.exports = function() {
 				}
 			} );
 
-			// only serve ssr content to logged out folks
-			if ( ! req.cookies.wordpress_logged_in && section.isomorphic ) {
+			if ( section.isomorphic ) {
 				sectionsModule.require( section.module )( serverRouter( app, setUpRoute, section ) );
 			}
 		} );
